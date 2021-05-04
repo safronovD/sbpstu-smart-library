@@ -4,10 +4,10 @@ json:
     db: EBOOKS
     query: "(dc.type=\"Academic thesis\")and(dc.language=rus)"
     fcq: ""
-    download_list_maxsize: 20000
+    download_list_maxsize: 20
     download_batch_size: 10
   output:
-    convert_enable: true
+    convert_enable: false
     elasticsearch:
       enable: false
       host:

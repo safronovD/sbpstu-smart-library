@@ -13,17 +13,23 @@ PATH_TO_JSON = "../../connector/output/VKR/jsons/"
 
 
 def convert_pdf_to_text(path):
-    output = StringIO()
+    try:
+        output = StringIO()
 
-    with open(path, "rb") as f:
-        extract_text_to_fp(f, output)
+        with open(path, "rb") as f:
+            extract_text_to_fp(f, output)
 
-    return output.getvalue()
+        return output.getvalue()
+    except:
+        return None
 
 
 def get_cleared_pdf(path):
     text = convert_pdf_to_text(path)
-    return get_cleared_words_from_text(text)
+    if text is not None:
+        return get_cleared_words_from_text(text)
+    else:
+        return None
 
 
 def get_keywords(path):
@@ -65,7 +71,10 @@ def main():
     writer = csv_writer(csv_output_file, fieldnames=fieldnames)
     writer.writeheader()
 
+    k = 0
     for row in reader:
+        print(str(k) + " : ", row[0])
+
         pdf_path = PATH_TO_PDF + row[0] + ".pdf"
         json_path = PATH_TO_JSON + row[0] + ".json"
 
@@ -73,10 +82,15 @@ def main():
         cleared_keywords = get_cleared_keywords(keywords)
         pdf_words = get_cleared_pdf(pdf_path)
 
+        if pdf_words is None:
+            continue
+
         keywords_freq = get_keywords_freq(pdf_words, cleared_keywords)
 
         for i in range(len(keywords)):
-            writer.writerow({'keyword': keywords[i].encode('utf8'), 'freq': keywords_freq[i]})
+            writer.writerow({'keyword': keywords[i], 'freq': keywords_freq[i]})
+
+        k = k + 1
 
     csv_input_file.close()
     csv_output_file.close()

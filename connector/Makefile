@@ -1,15 +1,20 @@
 NAME    := connector
 VERSION := 0.0.1
 
-BIN_DIR     := ./bin
+BIN_DIR := ./bin
 
 .PHONY: build
 
 build:
-	GOOS=linux go build -o ${BIN_DIR}/${NAME} ./src/*.go
+	mkdir -p ${BIN_DIR}
+	GOOS=linux go build -o ${BIN_DIR}/${NAME}-${VERSION} ./cmd/main.go
 
 run: build
-	${BIN_DIR}/${NAME} ${flags}
+	${BIN_DIR}/${NAME}-${VERSION} ${flags}
+
+install-lint:
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.37.1
+	golangci-lint --version
 
 lint:
 	golangci-lint run ./...
@@ -22,4 +27,4 @@ coverage:
 
 clean:
 	go clean
-	rm -f ${BIN_DIR}/${NAME}
+	rm -rf ${BIN_DIR}
